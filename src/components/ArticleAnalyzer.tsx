@@ -10,9 +10,11 @@ import { analyzeArticleBias } from '../services/biasDetection';
 import { fetchRelatedArticles, getSourceBiasRating } from '../services/newsApi';
 import { fetchAllSocialReactions } from '../services/socialMedia';
 import { useBias } from '../context/BiasContext';
+import { useLanguage } from '../context/LanguageContext';
 
 export const ArticleAnalyzer: React.FC = () => {
   const { darkMode } = useBias();
+  const { t } = useLanguage();
   const [url, setUrl] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<any>(null);
@@ -29,7 +31,7 @@ export const ArticleAnalyzer: React.FC = () => {
       // Step 1: Extract article content
       const extractedArticle = await extractArticleFromUrl(url);
       if (!extractedArticle) {
-        throw new Error('Unable to extract article content from the provided URL');
+        throw new Error(t('analyzer.errors.extractionFailed'));
       }
 
       // Step 2: Analyze bias and sentiment
@@ -88,7 +90,7 @@ export const ArticleAnalyzer: React.FC = () => {
       setAnalysisResult(result);
     } catch (err) {
       console.error('Analysis error:', err);
-      setError(err instanceof Error ? err.message : 'An error occurred during analysis');
+      setError(err instanceof Error ? err.message : t('analyzer.errors.analysisGeneral'));
     } finally {
       setAnalyzing(false);
     }
@@ -101,25 +103,24 @@ export const ArticleAnalyzer: React.FC = () => {
         <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 backdrop-blur-sm">
           <Sparkles className="w-4 h-4 text-blue-400" />
           <span className={`text-sm font-medium ${darkMode ? 'text-blue-300' : 'text-blue-600'}`}>
-            AI-Powered Bias Detection
+            {t('analyzer.hero.badge')}
           </span>
         </div>
         
         <h1 className="text-5xl md:text-6xl font-bold leading-tight">
           <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            Uncover Hidden
+            {t('analyzer.hero.title')}
           </span>
           <br />
           <span className={`${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            Media Bias
+            {t('analyzer.hero.subtitle')}
           </span>
         </h1>
         
         <p className={`text-xl max-w-3xl mx-auto leading-relaxed ${
           darkMode ? 'text-gray-300' : 'text-gray-600'
         }`}>
-          Analyze any news article instantly with our advanced AI to detect political bias, 
-          emotional language, and factuality. See how different sources frame the same story.
+          {t('analyzer.hero.description')}
         </p>
       </div>
 
@@ -143,7 +144,7 @@ export const ArticleAnalyzer: React.FC = () => {
                       type="url"
                       value={url}
                       onChange={(e) => setUrl(e.target.value)}
-                      placeholder="Paste any news article URL here..."
+                      placeholder={t('analyzer.hero.placeholder')}
                       className={`w-full pl-12 pr-6 py-4 rounded-2xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300 text-lg ${
                         darkMode 
                           ? 'bg-white/10 text-white placeholder-gray-400 backdrop-blur-sm' 
@@ -164,12 +165,12 @@ export const ArticleAnalyzer: React.FC = () => {
                   {analyzing ? (
                     <>
                       <Loader2 className="w-5 h-5 animate-spin" />
-                      <span>Analyzing...</span>
+                      <span>{t('common.analyzing')}</span>
                     </>
                   ) : (
                     <>
                       <Zap className="w-5 h-5" />
-                      <span>Analyze Now</span>
+                      <span>{t('common.analyzeNow')}</span>
                     </>
                   )}
                 </div>
@@ -183,7 +184,7 @@ export const ArticleAnalyzer: React.FC = () => {
                     <AlertTriangle className="w-5 h-5 text-red-400" />
                   </div>
                   <div>
-                    <h4 className="font-medium text-red-400">Analysis Error</h4>
+                    <h4 className="font-medium text-red-400">{t('analyzer.errors.title')}</h4>
                     <p className={`text-sm ${darkMode ? 'text-red-300' : 'text-red-600'}`}>{error}</p>
                   </div>
                 </div>
@@ -195,7 +196,7 @@ export const ArticleAnalyzer: React.FC = () => {
         {/* Quick Examples */}
         <div className="mt-8 text-center">
           <p className={`text-sm mb-4 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            Try these example articles:
+            {t('analyzer.hero.examples')}
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             {[
@@ -239,10 +240,10 @@ export const ArticleAnalyzer: React.FC = () => {
                     </div>
                     <div>
                       <h2 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                        Analysis Complete
+                        {t('analyzer.analysis.complete')}
                       </h2>
                       <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                        AI-powered bias detection results
+                        {t('analyzer.analysis.aiResults')}
                       </p>
                     </div>
                   </div>
@@ -255,15 +256,15 @@ export const ArticleAnalyzer: React.FC = () => {
                     darkMode ? 'text-gray-300' : 'text-gray-600'
                   }`}>
                     <span className="flex items-center space-x-1">
-                      <span className="font-medium">Source:</span>
+                      <span className="font-medium">{t('analyzer.analysis.source')}:</span>
                       <span>{analysisResult.article.source}</span>
                     </span>
                     <span className="flex items-center space-x-1">
-                      <span className="font-medium">Author:</span>
+                      <span className="font-medium">{t('analyzer.analysis.author')}:</span>
                       <span>{analysisResult.article.author}</span>
                     </span>
                     <span className="flex items-center space-x-1">
-                      <span className="font-medium">Published:</span>
+                      <span className="font-medium">{t('analyzer.analysis.published')}:</span>
                       <span>{new Date(analysisResult.article.publishDate).toLocaleDateString()}</span>
                     </span>
                   </div>
@@ -275,7 +276,7 @@ export const ArticleAnalyzer: React.FC = () => {
                     className="inline-flex items-center space-x-2 text-blue-400 hover:text-blue-300 font-medium transition-colors"
                   >
                     <ExternalLink className="w-4 h-4" />
-                    <span>View Original Article</span>
+                    <span>{t('common.viewOriginal')}</span>
                   </a>
                 </div>
                 

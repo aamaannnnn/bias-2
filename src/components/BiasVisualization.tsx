@@ -1,6 +1,7 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Minus, AlertTriangle, CheckCircle, Shield } from 'lucide-react';
 import { useBias } from '../context/BiasContext';
+import { useLanguage } from '../context/LanguageContext';
 
 interface BiasVisualizationProps {
   biasData: {
@@ -12,25 +13,26 @@ interface BiasVisualizationProps {
 
 export const BiasVisualization: React.FC<BiasVisualizationProps> = ({ biasData }) => {
   const { darkMode } = useBias();
+  const { t } = useLanguage();
   
   const getPoliticalBias = (score: number) => {
-    if (score <= -3) return { label: 'Left', color: 'from-blue-500 to-blue-600', icon: TrendingDown };
-    if (score <= -1) return { label: 'Center-Left', color: 'from-blue-400 to-blue-500', icon: TrendingDown };
-    if (score <= 1) return { label: 'Center', color: 'from-gray-400 to-gray-500', icon: Minus };
-    if (score <= 3) return { label: 'Center-Right', color: 'from-red-400 to-red-500', icon: TrendingUp };
-    return { label: 'Right', color: 'from-red-500 to-red-600', icon: TrendingUp };
+    if (score <= -3) return { label: t('analyzer.bias.left'), color: 'from-blue-500 to-blue-600', icon: TrendingDown };
+    if (score <= -1) return { label: t('analyzer.bias.centerLeft'), color: 'from-blue-400 to-blue-500', icon: TrendingDown };
+    if (score <= 1) return { label: t('analyzer.bias.center'), color: 'from-gray-400 to-gray-500', icon: Minus };
+    if (score <= 3) return { label: t('analyzer.bias.centerRight'), color: 'from-red-400 to-red-500', icon: TrendingUp };
+    return { label: t('analyzer.bias.right'), color: 'from-red-500 to-red-600', icon: TrendingUp };
   };
 
   const getFactualityData = (score: number) => {
-    if (score >= 8) return { label: 'High', color: 'from-green-500 to-green-600', icon: CheckCircle };
-    if (score >= 6) return { label: 'Medium', color: 'from-yellow-500 to-yellow-600', icon: Shield };
-    return { label: 'Low', color: 'from-red-500 to-red-600', icon: AlertTriangle };
+    if (score >= 8) return { label: t('analyzer.bias.high'), color: 'from-green-500 to-green-600', icon: CheckCircle };
+    if (score >= 6) return { label: t('analyzer.bias.medium'), color: 'from-yellow-500 to-yellow-600', icon: Shield };
+    return { label: t('analyzer.bias.low'), color: 'from-red-500 to-red-600', icon: AlertTriangle };
   };
 
   const getEmotionalData = (score: number) => {
-    if (score <= 2) return { label: 'Low', color: 'from-green-500 to-green-600', icon: CheckCircle };
-    if (score <= 4) return { label: 'Medium', color: 'from-yellow-500 to-yellow-600', icon: Shield };
-    return { label: 'High', color: 'from-red-500 to-red-600', icon: AlertTriangle };
+    if (score <= 2) return { label: t('analyzer.bias.low'), color: 'from-green-500 to-green-600', icon: CheckCircle };
+    if (score <= 4) return { label: t('analyzer.bias.medium'), color: 'from-yellow-500 to-yellow-600', icon: Shield };
+    return { label: t('analyzer.bias.high'), color: 'from-red-500 to-red-600', icon: AlertTriangle };
   };
 
   const political = getPoliticalBias(biasData.political);
@@ -43,31 +45,31 @@ export const BiasVisualization: React.FC<BiasVisualizationProps> = ({ biasData }
 
   const metrics = [
     {
-      title: 'Political Bias',
+      title: t('analyzer.analysis.politicalBias'),
       value: political.label,
       score: Math.abs(biasData.political),
       maxScore: 5,
       icon: PoliticalIcon,
       gradient: political.color,
-      description: 'Political leaning detected in content'
+      description: t('analyzer.analysis.politicalLeaning')
     },
     {
-      title: 'Factuality',
+      title: t('analyzer.analysis.factuality'),
       value: `${biasData.factual}/10`,
       score: biasData.factual,
       maxScore: 10,
       icon: FactualIcon,
       gradient: factual.color,
-      description: 'Reliability and accuracy assessment'
+      description: t('analyzer.analysis.reliabilityAssessment')
     },
     {
-      title: 'Emotional Language',
+      title: t('analyzer.analysis.emotionalLanguage'),
       value: emotional.label,
       score: biasData.emotional,
       maxScore: 10,
       icon: EmotionalIcon,
       gradient: emotional.color,
-      description: 'Emotional intensity in language'
+      description: t('analyzer.analysis.emotionalIntensity')
     }
   ];
 
